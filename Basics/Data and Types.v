@@ -68,3 +68,57 @@ it gives an assertion a name that can be used to refer to it later*)
 Example test_next_weekday:
   (next_weekdays(next_weekdays saturday)) = monday.
 Proof. simpl. reflexivity. Qed.
+ 
+Definition nandb (b1:bool) (b2:bool) : bool :=
+  if andb b1 b2 then false
+  else true.
+Example test_nandb1: (nandb true false) = true.
+Proof. simpl. reflexivity. Qed.
+Example test_nandb2: (nandb false false) = true.
+Proof. simpl. reflexivity. Qed.
+Example test_nandb3: (nandb false true) = true.
+Proof. simpl. reflexivity. Qed.
+Example test_nandb4: (nandb true true) = false.
+Proof. simpl. reflexivity. Qed.
+
+(*Types 
+Every expression in Coq has a type describing what sort of thing it computes
+The Check command asks Coq to print the type of an expression*)
+Check true.
+
+(*New Types from old
+The types we have defined so far are examples of "enumerated
+types": their definitions explicitly enumerate a finite set of elements 
+called constructors. Here is a more interesting type definition,
+where one of the constructors takes an argument*)
+
+Inductive rgb : Type :=
+  | red
+  | green
+  | blue.
+  
+Inductive color : Type := 
+  | black
+  | white
+  | primary (p : rgb).
+  
+(*An inductive definition does two things:
+1. defines a new set of constructors
+2. it groups them into a new name type
+
+We can define functions on colors using pattern matching just as we did for day and bool*)
+
+Definition monochrome (c : color) : bool := 
+  match c with 
+  | black => true
+  | white => true
+  | primary p => false
+  end.
+  
+Definition isred (c : color) : bool :=
+  match c with
+  | black => false
+  | white => false
+  | primary red => true
+  | primary _ => false
+  end.
