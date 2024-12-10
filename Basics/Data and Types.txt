@@ -1,0 +1,70 @@
+(*Explicit a type*)
+Inductive day : Type :=
+  | monday
+  | tuesday
+  | wednesday
+  | thursday
+  | friday
+  | saturday
+  | sunday.
+  
+  
+Inductive bool : Type := 
+  | true
+  | false.
+  
+
+(*Example definition of a function
+Types here are defined explicitly but Coq can often figure out
+types itself when they are not given explicitly*)
+Definition next_weekdays (d : day) : day := 
+  match d with
+  | monday => tuesday
+  | tuesday => wednesday
+  | wednesday => thursday
+  | thursday => friday
+  | friday => saturday
+  | saturday => sunday
+  | sunday => monday
+  end.
+  
+Definition negb (b:bool) : bool :=
+  match b with 
+  | true => false
+  | false => true
+  end.
+  
+Definition andb (b1:bool) (b2:bool) : bool :=
+  match b1 with
+  | true => b2
+  | false => false
+  end.
+  
+Definition orb (b1:bool) (b2:bool) : bool :=
+  match b1 with
+  | true => true
+  | false => b2
+  end.
+  
+Example test_orb1: (orb true false) = true.
+Proof. simpl. reflexivity. Qed.
+Example test_orb2: (orb false false) = false.
+Proof. simpl. reflexivity. Qed.
+Example test_orb3: (orb false true) = true.
+Proof. simpl. reflexivity. Qed.
+Example test_orb4: (orb true true) = true.
+Proof. simpl. reflexivity. Qed.
+
+(*Having a function, we can check how it works on some examples.
+There are basically three methods to do that.
+The first one uses the command Compute to evaluate a compound expression
+involving next_weekdays*)
+Compute (next_weekdays friday).
+Compute (next_weekdays (next_weekdays saturday)).
+  
+(*Second, we can record what we expect the result to be.
+This declaration does two things : it makes an assertion and 
+it gives an assertion a name that can be used to refer to it later*)
+Example test_next_weekday:
+  (next_weekdays(next_weekdays saturday)) = monday.
+Proof. simpl. reflexivity. Qed.
