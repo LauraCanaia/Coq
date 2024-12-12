@@ -1,3 +1,4 @@
+
 (*Modules
 Coq provdes a module system to aid in organizing large developments.
 We don't need most of its features, but one is useful here: if we enclose a collection of declarations
@@ -64,6 +65,8 @@ is used. To represent unary numbers with a Coq datatype, we use two constructors
 The capital-letter O constructor represents O and the S constructor can be applied to the 
 representation of the natural number n.*)
 
+Module NatPlayground.
+
 Inductive nat : Type :=
   | O
   | S (n : nat).
@@ -86,5 +89,53 @@ Definition pred (n : nat) : nat :=
   | O => O
   | S n' => n'
   end.
-  
+
+End NatPlayground.
+
 Check (S (S (S (S O)))).
+
+Definition minustwo (n : nat) : nat :=
+  match n with  
+  | O => O
+  | S O => O
+  | S (S n') => n'
+  end.
+
+Compute (minustwo 4).
+
+(*Differently from other functions, pred and minustwo are defined by giving computations
+rules while the deinition of S has no such behavior attached.
+For more interesting computations involving numbers, simple pattern matching is not enough:
+we also need recursion. Example: check if a number is odd or even*)
+
+Fixpoint even (n : nat) : bool :=
+  match n with 
+  | O => true
+  | S O => false
+  | S (S n') => even n'
+  end.
+  
+(*Defined that, we can also define odd in function of even*)
+
+Definition negb (b:bool) : bool :=
+  match b with 
+  | true => false
+  | false => true
+  end.
+  
+Definition odd (n:nat) : bool :=
+  negb (even n).
+  
+Example test_odd1: odd 1 = true.
+Proof. simpl. reflexivity. Qed.
+Example test_odd2: odd 4 = false.
+Proof. simpl. reflexivity. Qed.
+
+
+Fixpoint plus (n : nat) (m : nat) : nat :=
+  match n with 
+  | O => m
+  | S n' => S (plus n' m)
+  end.
+
+Compute (plus 3 2).
