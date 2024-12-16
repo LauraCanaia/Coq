@@ -125,11 +125,6 @@ Definition negb (b:bool) : bool :=
   
 Definition odd (n:nat) : bool :=
   negb (even n).
-  
-Example test_odd1: odd 1 = true.
-Proof. simpl. reflexivity. Qed.
-Example test_odd2: odd 4 = false.
-Proof. simpl. reflexivity. Qed.
 
 
 Fixpoint plus (n : nat) (m : nat) : nat :=
@@ -139,3 +134,44 @@ Fixpoint plus (n : nat) (m : nat) : nat :=
   end.
 
 Compute (plus 3 2).
+
+(*Even testing equality is a user-defined operation. The following function ebp
+tests natural numbers for equality, yelding a boolean.*)
+
+Fixpoint eqb (n m : nat) : bool :=
+  match n with 
+  | O => match m with
+        | O => true
+        | S m' => false
+        end
+  | S n' => match m with
+        | O => false
+        | S m' => eqb n' m'
+        end
+  end.
+
+(*Simarly we can define a leb function which returns true whether its first argument
+is less then or equal to its second argument*)
+
+Fixpoint leb (n m : nat) : bool := 
+  match n with
+  | O => true
+  | S n' => match m with
+           | O => false
+           | S m' => leb n' m'
+           end
+  end.
+  
+Definition ltb (n m : nat) : bool :=
+  match n with
+  | O => match m with
+        | O => false
+        | S m' => true
+        end
+  | S n'=> match m with
+        | O => false
+        | S m' => leb n' m'
+        end
+  end.
+  
+Compute ltb 0 5.
