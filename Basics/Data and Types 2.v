@@ -170,7 +170,7 @@ Definition ltb (n m : nat) : bool :=
         end
   | S n'=> match m with
         | O => false
-        | S m' => leb n' m'
+        | S m' => ltb n' m'
         end
   end.
   
