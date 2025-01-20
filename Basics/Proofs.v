@@ -168,8 +168,6 @@ Proof.
     - reflexivity. }
 Qed.
 
-Notation "A -> B" := (forall (_ : A), B) : type_scope.
-
 (*EXERCISE*)
 Theorem andb_true_elim2 : forall b c : bool,
   andb b c = true -> c = true.
