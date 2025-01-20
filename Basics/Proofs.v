@@ -78,3 +78,116 @@ Proof.
   rewrite -> plus_0_n.
   reflexivity. Qed.
 (*----------------------------*)
+
+  (*PROOF BY CASE ANALYSIS
+In general, hypothetical values can block semplification.
+To make progress, we need to consider the possible forms of n separately. If
+n is 0, then we can calculate the final result of (n+1)  =? 0 and check that it is false. 
+And if n = S n' for some n', then we can calculate at least it will begin with one S.*)
+
+Fixpoint eqb (n m : nat) : bool :=
+  match n, m with
+  | O, O => true
+  | O, S _ => false
+  | S _, O => false
+  | S n', S m' => eqb n' m'
+  end.
+
+Notation "x =? y" := (eqb x y) (at level 70).
+
+Theorem plus_1_neq_0 : forall n : nat,
+  (n + 1 =? 0) = false.
+Proof.
+  intros n. destruct n as [| n'] eqn:E.
+  - reflexivity.
+  - reflexivity.
+Qed.
+
+Definition negb (b:bool) : bool :=
+  match b with 
+  | true => false
+  | false => true
+  end.
+
+(*The destruct generates two subgoals, which must then prove separately in order to get coq accept the theorem.
+
+The annotation as [| n'] is called INTRO PATTERN. It tells Coq what variable names to introduce in each subgoal.
+In general what goes between the square brakets s a list of lists of names separated by |.
+
+The eqn:E annotation tells destruct to give the name E to this equation.
+
+The - signs on the lines 21 and 22 are called bullets, and they mark the parts of the proof that correspond to the two 
+generated subgoals. The part of the proof that correspond to the two generated subgoals. The part of the proof script that
+comes after a bullet is the entire proof for the corresponding subgoal.
+Each of the subgoals is easily proved by a single use of reflexivity, wich of the subgoals preforms some sort of semplification.*)
+
+(*The destruct tactic can be used with any inductively defined datatype. For example, we use it next to prove that boolean negation is involutive -
+i.e. that negation is its own inverse*)
+
+Theorem negb_involutive : forall b : bool,
+  negb (negb b) = b.
+Proof.
+  intros b. destruct b eqn : E.
+  - reflexivity.
+  - reflexivity. 
+Qed.
+
+(*It is sometimes useful to invoke destruct inside a subgoal, generating yet more proof obligations.
+In this case, we use different kinds of bullets yo mark goals on different "levels". For example:*)
+
+Theorem andb_commutative : forall b c, andb b c = andb c b.
+Proof.
+  intros b c. destruct b eqn : Eb.
+  -destruct c eqn : Ec.
+    + reflexivity.
+    + reflexivity.
+  -destruct c eqn : Ec.
+    + reflexivity.
+    + reflexivity.
+Qed.
+
+(*We can also use curly braces*)
+
+Theorem andb3_exchange :
+  forall b c d, andb (andb b c) d = andb (andb b d) c.
+Proof.
+  intros b c d. destruct b eqn : Eb.
+  - destruct c eqn : Ec.
+  {destruct d eqn :Ed.
+    - reflexivity.
+    - reflexivity. }
+  {destruct d eqn :Ed.
+    - reflexivity.
+    - reflexivity. }
+  - destruct c eqn : Ec.
+  {destruct d eqn :Ed.
+    - reflexivity.
+    - reflexivity. }
+  {destruct d eqn :Ed.
+    - reflexivity.
+    - reflexivity. }
+Qed.
+
+Notation "A -> B" := (forall (_ : A), B) : type_scope.
+
+(*EXERCISE*)
+Theorem andb_true_elim2 : forall b c : bool,
+  andb b c = true -> c = true.
+Proof.
+  intros b c. 
+  intros H.
+  destruct b.
+  (*CASE b = true*)
+    - destruct c.
+      (*CASE c = true*)
+      + rewrite <- H. reflexivity.
+      (*CASE c = false*)
+      + rewrite <- H. reflexivity.
+  (*CASE b = false*)
+    - destruct c.
+      (*CASE c = true*)
+      + rewrite <- H. reflexivity.
+      (*CASE c = false*)
+      + rewrite <- H. reflexivity.
+Qed.
+
